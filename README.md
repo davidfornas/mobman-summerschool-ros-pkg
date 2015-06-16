@@ -1,0 +1,1 @@
+# mobman-summerschool-ros-pkg
