@@ -106,15 +106,16 @@ include_directories(
 
 ## Declare a cpp executable
 add_executable(interface src/interface.cpp src/arduino_serial.cpp)
+add_executable(terminal_interface src/terminal_interface.cpp src/arduino_serial.cpp)
+
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(vehicle_interface_node vehicle_interface_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(interface
-   ${catkin_LIBRARIES}
- )
+target_link_libraries(interface ${catkin_LIBRARIES})
+target_link_libraries(terminal_interface ${catkin_LIBRARIES})
 
 #############
 ## Install ##
