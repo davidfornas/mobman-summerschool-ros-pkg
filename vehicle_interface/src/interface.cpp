@@ -43,7 +43,27 @@ int main(int argc, char *argv[])
   serialport_flush(fd);
 
   //Write
-  sprintf(buf, "SAYONARA; BABY");
+  sprintf(buf, "SENSE");
+  if (fd == -1)
+    error("serial port not opened");
+  rc = serialport_write(fd, buf);
+  if (rc == -1)
+    error("error writing");
+  else
+    printf("write ok\n");
+
+
+  //Read
+  if (fd == -1)
+    error("serial port not opened");
+  memset(buf, 0, buf_max); //
+  serialport_read_until(fd, buf, eolchar, buf_max, timeout);
+  if (!quiet)
+    printf("read string:");
+  printf("%s\n", buf);
+
+  //Write
+  sprintf(buf, "MOTOR+3");
   if (fd == -1)
     error("serial port not opened");
   rc = serialport_write(fd, buf);
@@ -69,12 +89,12 @@ int main(int argc, char *argv[])
     printf("flushing receive buffer\n");
   serialport_flush(fd);
 
-  while(1){
+  //while(1){
     //ASK FOR SENSORS...
 
     //SEND MOTOR CTRL...
 
-  }
+  //}
 
 } // end main
 
