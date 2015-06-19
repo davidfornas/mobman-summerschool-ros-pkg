@@ -45,6 +45,10 @@
  *
  */
 
+
+// todo This sample code code  used the old classless C code so it needs
+//to be fixed.
+
 #include <stdio.h>    // Standard input/output definitions
 #include <stdlib.h>
 #include <string.h>   // String function definitions

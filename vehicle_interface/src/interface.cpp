@@ -20,79 +20,45 @@ int main(int argc, char *argv[])
   int fd = -1;
   char serialport[buf_max];
   int baudrate = 9600; // default
-  char quiet = 0;
   char eolchar = '\n';
   int timeout = 5000;
   char buf[buf_max];
-  int rc, n=50;
+  int rc, n = 50;
 
-  //If open, close it
-  if (fd != -1)
-  {
-    serialport_close(fd);
-    if (!quiet)
-      printf("closed port %s\n", serialport);
-  }
-
-  //Init port
-  fd = serialport_init("/dev/rfcomm1", baudrate);
-  if (fd == -1)
-    error("couldn't open port");
-  if (!quiet)
-    printf("opened port %s\n", serialport);
-  serialport_flush(fd);
+  ArdunioSerial serial("/dev/rfcomm1", baudrate);
+  if (!serial.ok())
+    return -1;
 
   //Write
   sprintf(buf, "SENSE");
-  if (fd == -1)
-    error("serial port not opened");
-  rc = serialport_write(fd, buf);
+  rc = serial.writeText(buf);
   if (rc == -1)
     error("error writing");
   else
     printf("write ok\n");
 
-
   //Read
-  if (fd == -1)
-    error("serial port not opened");
   memset(buf, 0, buf_max); //
-  serialport_read_until(fd, buf, eolchar, buf_max, timeout);
-  if (!quiet)
-    printf("read string:");
+  serial.readUntil(buf, eolchar, buf_max, timeout);
   printf("%s\n", buf);
 
   //Write
   sprintf(buf, "MOTOR+3");
-  if (fd == -1)
-    error("serial port not opened");
-  rc = serialport_write(fd, buf);
+  rc = serial.writeText(buf);
   if (rc == -1)
     error("error writing");
   else
     printf("write ok\n");
 
-
   //Read
-  if (fd == -1)
-    error("serial port not opened");
   memset(buf, 0, buf_max); //
-  serialport_read_until(fd, buf, eolchar, buf_max, timeout);
-  if (!quiet)
-    printf("read string:");
+  serial.readUntil(buf, eolchar, buf_max, timeout);
   printf("%s\n", buf);
 
-  //Flush
-  if (fd == -1)
-    error("serial port not opened");
-  if (!quiet)
-    printf("flushing receive buffer\n");
-  serialport_flush(fd);
-
   //while(1){
-    //ASK FOR SENSORS...
+  //ASK FOR SENSORS...
 
-    //SEND MOTOR CTRL...
+  //SEND MOTOR CTRL...
 
   //}
 

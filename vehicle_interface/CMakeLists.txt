@@ -106,7 +106,8 @@ include_directories(
 
 ## Declare a cpp executable
 add_executable(interface src/interface.cpp src/arduino_serial.cpp)
-add_executable(terminal_interface src/terminal_interface.cpp src/arduino_serial.cpp)
+# FIX-ME This code won't compile until it uses the new Arduino Serial class properly.
+#add_executable(terminal_interface src/terminal_interface.cpp src/arduino_serial.cpp)
 
 
 ## Add cmake target dependencies of the executable/library
@@ -115,7 +116,7 @@ add_executable(terminal_interface src/terminal_interface.cpp src/arduino_serial.
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(interface ${catkin_LIBRARIES})
-target_link_libraries(terminal_interface ${catkin_LIBRARIES})
+#target_link_libraries(terminal_interface ${catkin_LIBRARIES})
 
 #############
 ## Install ##
