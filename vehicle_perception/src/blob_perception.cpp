@@ -9,7 +9,6 @@
 
 static const std::string OPENCV_WINDOW = "Image window";
 
-
 class ImageConverter
 {
   ros::NodeHandle nh_;
@@ -18,12 +17,13 @@ class ImageConverter
   image_transport::Publisher image_pub_;
 
 public:
-  ImageConverter()
-    : it_(nh_)
+  ImageConverter() :
+      it_(nh_)
   {
     // Subscrive to input video feed and publish output video feed
-    image_sub_ = it_.subscribe("/camera/image_raw", 1,
-      &ImageConverter::imageCb, this);
+
+    image_transport::TransportHints hints("compressed", ros::TransportHints());
+    image_sub_ = it_.subscribe("/phone1/camera/image", 1, &ImageConverter::imageCb, this, hints);
     image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
     cv::namedWindow(OPENCV_WINDOW);
@@ -36,6 +36,7 @@ public:
 
   void imageCb(const sensor_msgs::ImageConstPtr& msg)
   {
+
     cv_bridge::CvImagePtr cv_ptr;
     try
     {
@@ -47,45 +48,39 @@ public:
       return;
     }
 
-    // Draw an example circle on the video stream
-    if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
-      cv::circle(cv_ptr->image, cv::Point(50, 50), 10, CV_RGB(255,0,0));
+    cv::Mat im0, im;
+    cv::cvtColor(cv_ptr->image, im0, CV_RGB2GRAY);
+    cv::resize(im0, im, cv::Size(640, 480), 0, 0, cv::INTER_LANCZOS4);
 
-    // Update GUI Window
-    cv::imshow(OPENCV_WINDOW, cv_ptr->image);
-    cv::waitKey(3);
+    // Set up the detector with default parameters.
+    cv::SimpleBlobDetector detector;
+
+    // Detect blobs.
+    std::vector<cv::KeyPoint> keypoints;
+    detector.detect(im, keypoints);
+
+    // Draw detected blobs as red circles.
+    // DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures the size of the circle corresponds to the size of blob
+    cv::Mat im_with_keypoints;
+    cv::drawKeypoints(im, keypoints, im_with_keypoints, cv::Scalar(0, 0, 255),
+                      cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+
+    // Show blobs
+    cv::imshow("keypoints", im_with_keypoints);
+    cv::waitKey(0);
 
     // Output modified video stream
     image_pub_.publish(cv_ptr->toImageMsg());
   }
 };
 
-
-int main(int argc, char** argv){
+int main(int argc, char** argv)
+{
 
   ros::init(argc, argv, "image_converter");
   ImageConverter ic;
   ros::spin();
   return 0;
-  
-  // Read image
-  cv::Mat im = cv::imread( "blob.jpg", cv::IMREAD_GRAYSCALE );
 
-  // Set up the detector with default parameters.
-  cv::SimpleBlobDetector detector;
-
-  // Detect blobs.
-  std::vector<cv::KeyPoint> keypoints;
-  detector.detect( im, keypoints);
-
-  // Draw detected blobs as red circles.
-  // DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures the size of the circle corresponds to the size of blob
-  cv::Mat im_with_keypoints;
-  cv::drawKeypoints( im, keypoints, im_with_keypoints, cv::Scalar(0,0,255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
-
-  // Show blobs
-  cv::imshow("keypoints", im_with_keypoints );
-  cv::waitKey(0);
-  return 0;
 }
 
