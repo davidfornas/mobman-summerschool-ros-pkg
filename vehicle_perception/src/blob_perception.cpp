@@ -1,13 +1,13 @@
+//ROS includes
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
+
+//OpenCV includes
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-
 #include "opencv2/opencv.hpp"
-
-static const std::string OPENCV_WINDOW = "Image window";
 
 class ImageConverter
 {
@@ -24,14 +24,14 @@ public:
 
     image_transport::TransportHints hints("compressed", ros::TransportHints());
     image_sub_ = it_.subscribe("/phone1/camera/image", 1, &ImageConverter::imageCb, this, hints);
-    image_pub_ = it_.advertise("/image_converter/output_video", 1);
+    image_pub_ = it_.advertise("/blob_perception/output_video", 1);
 
-    cv::namedWindow(OPENCV_WINDOW);
+    cv::namedWindow("Image converter");
   }
 
   ~ImageConverter()
   {
-    cv::destroyWindow(OPENCV_WINDOW);
+    cv::destroyWindow("Image converter");
   }
 
   void imageCb(const sensor_msgs::ImageConstPtr& msg)
@@ -70,6 +70,7 @@ public:
     cv::waitKey(0);
 
     // Output modified video stream
+    cv_ptr->image=im_with_keypoints;
     image_pub_.publish(cv_ptr->toImageMsg());
   }
 };
