@@ -77,7 +77,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+   INCLUDE_DIRS include
 #  LIBRARIES vehicle_perception
   CATKIN_DEPENDS cv_bridge geometry_msgs nav_msgs roscpp sensor_msgs image_transport
   DEPENDS OpenCV
@@ -90,9 +90,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
+include_directories( include ${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp library
 # add_library(vehicle_perception
@@ -101,7 +99,7 @@ include_directories(
 
 ## Declare a cpp executable
 add_executable(blob_perception src/blob_perception.cpp)
-add_executable(surf_detection src/surf_detection.cpp)
+add_executable(surf_detection_example src/surf_detection_example.cpp src/surf_detector.cpp)
 add_executable(surf_detection_terminal src/surf_detection_terminal.cpp)
 
 ## Add cmake target dependencies of the executable/library
@@ -110,5 +108,5 @@ add_executable(surf_detection_terminal src/surf_detection_terminal.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(blob_perception ${catkin_LIBRARIES})
-target_link_libraries(surf_detection ${catkin_LIBRARIES})
+target_link_libraries(surf_detection_example ${catkin_LIBRARIES})
 target_link_libraries(surf_detection_terminal ${catkin_LIBRARIES})
