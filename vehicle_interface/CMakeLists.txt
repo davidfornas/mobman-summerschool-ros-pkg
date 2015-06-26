@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -85,7 +85,7 @@ catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES vehicle_interface
   CATKIN_DEPENDS geometry_msgs nav_msgs roscpp sensor_msgs std_msgs
-#  DEPENDS system_lib
+  DEPENDS boost
 )
 
 ###########
@@ -95,9 +95,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(include)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
+include_directories(${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp library
 # add_library(vehicle_interface
@@ -105,7 +103,7 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-add_executable(interface src/interface.cpp src/arduino_serial.cpp)
+add_executable(interface src/interface.cpp src/arduino_serial.cpp src/arduino_interface.cpp)
 # FIX-ME This code won't compile until it uses the new Arduino Serial class properly.
 #add_executable(terminal_interface src/terminal_interface.cpp src/arduino_serial.cpp)
 

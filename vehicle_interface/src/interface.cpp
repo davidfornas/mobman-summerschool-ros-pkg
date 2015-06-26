@@ -5,6 +5,7 @@
 #include <getopt.h>
 
 #include <vehicle_interface/arduino_serial.h>
+#include <vehicle_interface/arduino_interface.h>
 
 //
 void error(char* msg)

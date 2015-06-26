@@ -17,6 +17,8 @@
 #include <string.h>   // String function definitions
 #include <sys/ioctl.h>
 
+#include <boost/shared_ptr.hpp>
+
 /** Connect to a serial port and offer  read/write operations. */
 class ArdunioSerial
 {
@@ -61,6 +63,7 @@ private:
   int init(const char* serialport, int baud);
 
 };
+typedef boost::shared_ptr<ArdunioSerial> ArdunioSerialPtr;
 
 #endif  /* __ARDUINOSERIAL_H__ */
 
