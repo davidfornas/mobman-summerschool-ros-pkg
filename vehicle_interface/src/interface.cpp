@@ -14,8 +14,8 @@ void error(char* msg)
   exit(EXIT_FAILURE);
 }
 
-int main(int argc, char *argv[])
-{
+int arduino_serial_test(int argc, char *argv[]){
+
   const int buf_max = 256;
 
   int fd = -1;
@@ -55,6 +55,14 @@ int main(int argc, char *argv[])
   memset(buf, 0, buf_max); //
   serial.readUntil(buf, eolchar, buf_max, timeout);
   printf("%s\n", buf);
+}
+
+int main(int argc, char *argv[])
+{
+
+  //return arduino_serial_test(argc, argv);
+  ArduinoInterface interface("/dev/rfcomm1");
+
 
   //while(1){
   //ASK FOR SENSORS...
