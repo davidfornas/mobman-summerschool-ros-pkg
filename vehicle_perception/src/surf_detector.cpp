@@ -34,6 +34,7 @@ void SurfDetector::imageCb(const sensor_msgs::ImageConstPtr& msg)
     ROS_ERROR(" --(!) Error reading scene images ");
     return;
   }
+  ROS_INFO_STREAM("Image resolution: " << img_scene.cols << "x" << img_scene.rows << std::endl);
 
   //-- Step 1: Detect the keypoints using SURF Detector
   int minHessian = 400;
@@ -103,15 +104,12 @@ void SurfDetector::imageCb(const sensor_msgs::ImageConstPtr& msg)
   Mat H = findHomography(obj, scene, CV_RANSAC, 3, mask);
   std::cout << "Homography: " << std::endl << H << std::endl;
 
-  //Compute errors
+  //Compute errors will use rotation error
   double rotation_error=0;
   if (isInitialized())
   {
     rotation_error= cv::norm(H(cv::Rect_<int>(0, 0, 2, 2)), H_(cv::Rect_<int>(0, 0, 2, 2)));
     std::cout << "Homography rotation error: " << rotation_error << std::endl;
-    //Translation error is mostly irrelevant
-    std::cout << "Homography translation error: "
-        << cv::norm(H(cv::Rect_<int>(2, 0, 1, 2)), H_(cv::Rect_<int>(2, 0, 1, 2))) << std::endl;
   }
 
   //Count inliers to check for success
@@ -122,15 +120,15 @@ void SurfDetector::imageCb(const sensor_msgs::ImageConstPtr& msg)
   double inliers_ratio = num_inliers * 100.0 / good_matches.size();
   std::cout << "Number of inliers: " << num_inliers << "Percentage: " << inliers_ratio << std::endl;
 
+  bool valid = false;
   //If the homography is considered valid, store it
   if((inliers_ratio>40 && rotation_error < 1.5) || (inliers_ratio>20 && rotation_error < 0.8) || (inliers_ratio>10 && rotation_error < 0.3)){
-    ROS_INFO("VALID H");
+    ROS_INFO("H seems to be valid.");
     setHomography(H);
-  }else ROS_ERROR("H IS NOT GOOD ENOUGH");
+    valid = true;
+  }else
+    ROS_ERROR("H seems to be wrong.");
 
-
-
-  // store match or keypoints or points somewhere where you can access them later
 
   //-- Get the corners from the image_1 ( the object to be "detected" )
   std::vector<Point2f> obj_corners(4);
@@ -152,13 +150,34 @@ void SurfDetector::imageCb(const sensor_msgs::ImageConstPtr& msg)
   line(img_matches, scene_corners[3] + Point2f(img_object_.cols, 0), scene_corners[0] + Point2f(img_object_.cols, 0),
        Scalar(0, 255, 0), 4);
 
-  //-- Show detected matches
-  imshow("Good Matches & Object detection", img_matches);
-  waitKey(0);
+  // Draw centroid, used to publish error
+  Point2f centroid(0, 0);
+  centroid = (scene_corners[0] + scene_corners[1] + scene_corners[2] + scene_corners[3]);
+  centroid.x /= 4;centroid.x+=img_object_.cols;
+  centroid.y /= 4;
 
-  // Output modified video stream
+  //Change color if it is a valid homography
+  if(valid)
+    circle(img_matches, centroid, 10, Scalar(255, 0, 0), 4);
+  else
+    circle(img_matches, centroid, 10, Scalar(0, 0, 255), 4);
+
+  //Show detected matches
+  if(display_){
+    imshow("Good Matches & Object detection", img_matches);
+    waitKey(0);
+  }
+
+  // Publish modified video stream for debug
   cv_ptr->image = img_matches;
   image_pub_.publish(cv_ptr->toImageMsg());
+
+  //Publish image error from centroid
+  std_msgs::Int32 x, y;
+  x.data = centroid.x;
+  y.data = centroid.y;
+  error_x_pub_.publish(x);
+  error_y_pub_.publish(y);
 
 }
 
