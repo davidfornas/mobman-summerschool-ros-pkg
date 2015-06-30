@@ -1,0 +1,21 @@
+<launch>
+
+  <arg name="image_topic" default="/phone1/camera/image" />
+  <arg name="debug_image" default="/debug" />
+  <arg name="error_topic" default="/error" />
+  <arg name="status_topic" default="/status" />
+  <arg name="template_file_basename" default="clip.jpg" />
+  <arg name="display_image" default="false" />
+  
+  <param name="image_topic" value="$(arg image_topic)" />
+  <param name="debug_image" value="$(arg debug_image)" />
+  <param name="error_topic" value="$(arg error_topic)" />
+  <param name="status_topic" value="$(arg status_topic)" />
+  <param name="template_file_path" value="$(find vehicle_perception)/resources/$(arg template_file_basename)" />
+  <param name="display_image" value="$(arg display_image)" />
+  
+  <node name="detector1" pkg="vehicle_perception" type="surf_detection_example" output="screen" respawn="false"/>
+  
+</launch>
+
+
