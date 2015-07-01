@@ -28,6 +28,9 @@ class ArduinoInterface
   int sonar_servo_state_;
   int sonar_;
 
+  //Timeout to comunicate with ArduinoSerial
+  int timeout_;
+
 public:
 
   /** Constructor.
@@ -36,6 +39,7 @@ public:
   ArduinoInterface( const char* serialport  )
   {
     arduino_ = boost::make_shared<ArdunioSerial>(serialport, 9600);
+    if(!arduino_->ok()) ROS_ERROR("Could not open port.");
 
     //Use params to configure topics...
     //Publish sensors
@@ -48,19 +52,37 @@ public:
     left_wheel_sub_= nh_.subscribe("/sonar_servo_cmd", 1, &ArduinoInterface::sonarServoCallback, this);
 
     //Init sensors querying them...
+    sonar_servo_state_ = 0;
+    sendCmd("SONAR", 0);
+
+    timeout_ = 2000; //Serial read timeout, Default 5000;
+
+    querySonar();
+    publishSonar();
+
+    ROS_INFO("VEHICLE INITIALIZED");
   }
   ~ArduinoInterface()
   {
   }
 
-  void leftWheelCallback(const std_msgs::String::ConstPtr& msg);
-  void rightWheelCallback(const std_msgs::String::ConstPtr& msg);
-  void sonarServoCallback(const std_msgs::String::ConstPtr& msg);
-
+  void publishSonar(){
+    querySonar();
+    std_msgs::Int32 s, ss;
+    s.data = sonar_;
+    ss.data = sonar_servo_state_;
+    sonar_pub_.publish(s);
+    sonar_servo_pub_.publish(std_msgs::Int32(ss));
+  }
 
 private:
 
-  void sendCmd();
+  void leftWheelCallback(const std_msgs::Int32::ConstPtr& msg);
+  void rightWheelCallback(const std_msgs::Int32::ConstPtr& msg);
+  void sonarServoCallback(const std_msgs::Int32::ConstPtr& msg);
+
+  void sendCmd(std::string, int);
+  void querySonar();
 
 };
 

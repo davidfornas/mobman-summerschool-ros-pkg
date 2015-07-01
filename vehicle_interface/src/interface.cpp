@@ -60,16 +60,17 @@ int arduino_serial_test(int argc, char *argv[]){
 int main(int argc, char *argv[])
 {
 
-  //return arduino_serial_test(argc, argv);
+  //TEST SERIAL: arduino_serial_test(argc, argv);
+
+  //TEST INTERFACE
   ArduinoInterface interface("/dev/rfcomm1");
 
-
-  //while(1){
-  //ASK FOR SENSORS...
-
-  //SEND MOTOR CTRL...
-
-  //}
+  ros::Rate r(10);
+  while(ros::ok()){
+    interface.publishSonar();
+    r.sleep();
+    ros::spinOnce();
+  }
 
 } // end main
 
