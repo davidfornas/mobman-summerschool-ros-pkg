@@ -72,7 +72,7 @@ public:
     s.data = sonar_;
     ss.data = sonar_servo_state_;
     sonar_pub_.publish(s);
-    sonar_servo_pub_.publish(std_msgs::Int32(ss));
+    sonar_servo_pub_.publish(ss);
   }
 
 private:
