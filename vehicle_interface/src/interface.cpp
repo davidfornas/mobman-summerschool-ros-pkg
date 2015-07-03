@@ -60,10 +60,13 @@ int arduino_serial_test(int argc, char *argv[]){
 int main(int argc, char *argv[])
 {
 
+  ros::NodeHandle nh;
   //TEST SERIAL: arduino_serial_test(argc, argv);
 
   //TEST INTERFACE
-  ArduinoInterface interface("/dev/rfcomm1");
+  std::string device("/dev/rfcomm1");
+  nh.getParam("device", device);
+  ArduinoInterface interface(device);
 
   ros::Rate r(10);
   while(ros::ok()){
