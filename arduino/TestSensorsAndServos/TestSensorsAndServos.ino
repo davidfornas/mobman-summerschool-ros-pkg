@@ -1,7 +1,5 @@
-// Declaraciones relativas a los servos
-
 #include <Servo.h>
- 
+
 Servo left_servo, right_servo;     // Servos for the wheels
 Servo sonar_servo;  // Servo for the sonar ranger
 int pos = 90;     // Right servo position
@@ -19,6 +17,8 @@ volatile int count = 0;
 volatile int ok = LOW;  // Valid measure
 volatile unsigned long now = 0;
 volatile unsigned long before = 0;
+
+     
 
 void setup()
 {
@@ -60,19 +60,7 @@ void loop()
   Serial.print(mm);
   Serial.println(" milimetros");
   Serial.println(" ");
-  
-/*  while (Serial.available() > 0) {
-                // read the incoming byte:
-                incomingByte = Serial.read();
 
-                // say what you got:
-                Serial.print(incomingByte, HEX);
-                Serial.print(" ");
-        }  
-        
-  Serial.println(" ");
-  Serial.println(" ");
-*/  
   digitalWrite(MEASURE, LOW);          // Inhibe mediciones  
   
   detachInterrupt(1);            // Inhabilita interrupción
