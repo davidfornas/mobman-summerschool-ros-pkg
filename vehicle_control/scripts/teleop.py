@@ -31,7 +31,7 @@
 
 import rospy
 
-from std_msgs.msg import Int8
+from std_msgs.msg import Int32
 
 import sys, select, termios, tty
 
@@ -81,8 +81,8 @@ if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
     
     rospy.init_node('vehicle_teleop')
-    lpub = rospy.Publisher('/left_wheel_cmd', Int8, queue_size=5)
-    rpub = rospy.Publisher('/right_wheel_cmd', Int8, queue_size=5)
+    lpub = rospy.Publisher('/left_wheel_cmd', Int32, queue_size=5)
+    rpub = rospy.Publisher('/right_wheel_cmd', Int32, queue_size=5)
 
     r = 0
     l = 0
@@ -96,7 +96,6 @@ if __name__=="__main__":
     control_l_speed = 0
     try:
         print msg
-        print vel(speed)
         while(1):
             key = getKey()
             #Move keys assign speed to wheels
@@ -108,7 +107,6 @@ if __name__=="__main__":
             elif key in speedBindings.keys():
                 speed = speed * speedBindings[key]
                 count = 0
-
                 print vel(speed)
                 if (status == 14):
                     print msg
@@ -147,27 +145,26 @@ if __name__=="__main__":
                 control_r_speed = target_r_speed
 
             #Publish speeds
-            lwheel = Int8()
-            rwheel = Int8()
+            lwheel = Int32()
+            rwheel = Int32()
 
-            lwheel.data = control_l_speed
-            rwheel.data = control_r_speed
+            lwheel.data = 90 + control_l_speed
+            rwheel.data = 90 + control_r_speed
 
             rpub.publish(rwheel)
             lpub.publish(lwheel)
 
             #Debug
-            #print("loop: {0}".format(count))
-            #print("target: vl: {0}, wr: {1}".format(control_l_speed, control_r_speed))
+            print("loop: {0}".format(count))
+            print("target: vl: {0}, wr: {1}".format(lwheel.data, rwheel.data))
 
     except:
         print e
 
     finally:
 
-        twist = Twist()
-        lwheel = Int8()
-        rwheel = Int8()
+        lwheel = Int32()
+        rwheel = Int32()
 
         lwheel.data = 0
         rwheel.data = 0
