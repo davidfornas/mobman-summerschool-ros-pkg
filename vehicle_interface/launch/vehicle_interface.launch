@@ -1,6 +1,6 @@
 <launch>
   
-  <param name="device" value="/dev/rfcomm1" />  
+  <param name="device" value="/dev/rfcomm0" />  
   <node name="interface" pkg="vehicle_interface" type="interface" output="screen" respawn="false"/>
   
 </launch>

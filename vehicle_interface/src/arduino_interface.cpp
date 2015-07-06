@@ -1,4 +1,6 @@
 #include <vehicle_interface/arduino_interface.h>
+#include <sstream>
+#include <string>
 
 void ArduinoInterface::leftWheelCallback(const std_msgs::Int32::ConstPtr& msg)
 {
@@ -19,13 +21,16 @@ void ArduinoInterface::sonarServoCallback(const std_msgs::Int32::ConstPtr& msg)
 
 void ArduinoInterface::sendCmd(std::string cmd, int arg)
 {
+  std::ostringstream s;
+  s << cmd << "+" << arg;
+  const std::string full_cmd(s.str());
 
   const int buf_max = 256;
   char buf[buf_max];
   int rc;
 
   //Write
-  strncpy(buf, cmd.c_str(), buf_max);
+  strncpy(buf, full_cmd.c_str(), buf_max);
 
   rc = arduino_->writeText(buf);
   if (rc == -1)
@@ -47,7 +52,6 @@ void ArduinoInterface::querySonar()
   //Read
   memset(buf, 0, buf_max); //
   arduino_->readUntil(buf, eolchar, buf_max, timeout_);
-  sonar_ = atoi(buf);
-  ROS_DEBUG_STREAM("Read: "<< buf);
+  sonar_ = atof(buf);
+  ROS_INFO_STREAM("Read: "<< buf);
 }
-

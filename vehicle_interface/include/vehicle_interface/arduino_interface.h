@@ -49,18 +49,18 @@ public:
     //Subscribe to vehicle commands
     left_wheel_sub_= nh_.subscribe("/left_wheel_cmd", 1, &ArduinoInterface::leftWheelCallback, this);
     right_wheel_sub_= nh_.subscribe("/right_wheel_cmd", 1, &ArduinoInterface::rightWheelCallback, this);
-    left_wheel_sub_= nh_.subscribe("/sonar_servo_cmd", 1, &ArduinoInterface::sonarServoCallback, this);
+    sonar_servo_sub_= nh_.subscribe("/sonar_servo_cmd", 1, &ArduinoInterface::sonarServoCallback, this);
 
     //Init sensors querying them...
     sonar_servo_state_ = 0;
     sendCmd("SONAR", 0);
 
-    timeout_ = 2000; //Serial read timeout, Default 5000;
+    timeout_ = 500; //Serial read timeout, Default 5000;
 
     querySonar();
     publishSonar();
 
-    ROS_INFO("VEHICLE INITIALIZED");
+    ROS_INFO("Vehicle topics initialized. Issue commands now.");
   }
   ~ArduinoInterface()
   {

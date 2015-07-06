@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-
+  ros::init(argc, argv, "vehicle_inrface");
   ros::NodeHandle nh;
 
   std::string device("/dev/rfcomm1");
@@ -12,13 +12,12 @@ int main(int argc, char *argv[])
 
   ArduinoInterface interface(device.c_str());
 
-  ros::Rate r(10);
+  ros::Rate r(1);
 
   while(ros::ok()){
     interface.publishSonar();
     r.sleep();
     ros::spinOnce();
   }
-
 }
 
