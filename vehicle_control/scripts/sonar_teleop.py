@@ -31,11 +31,14 @@
 
 import rospy
 
-from std_msgs.msg import Int8
+from std_msgs.msg import Int32
 
 import sys, select, termios, tty
 
+sonar_value=0
+
 msg = """
+
 Control The Sonar!
 ---------------------------
 h Move 10 deg. left
@@ -63,10 +66,9 @@ if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
     
     rospy.init_node('sonar_teleop')
-    pub = rospy.Publisher('/sonar_servo_cmd', Int8, queue_size=5)
+    pub = rospy.Publisher('/sonar_servo_cmd', Int32, queue_size=5)
 
-    status = 0
-
+    status = 90
     try:
         print msg
         print pos(status)
@@ -74,18 +76,21 @@ if __name__=="__main__":
             key = getKey()
             if key == 'h':
                 status = status - 10
+                if( status < 0 ): 
+                    status = 0
             elif key == 'j' or key == ' ':
-                status = 0
+                status = 90
             elif key == 'k' :
                 status = status + 10
+                if( status > 180 ):
+                    status = 180
             elif (key == '\x03'):
                 break
 
             print pos(status)
             
-            servo = Int8()
-            servo.data = status
-            
+            servo = Int32()
+            servo.data = status            
             pub.publish(servo)
 
             #print("servo pos: {0}".format(servo))
@@ -95,7 +100,7 @@ if __name__=="__main__":
 
     finally:
 
-        servo = Int8()
+        servo = Int32()
         servo.data = 0
             
         pub.publish(servo)

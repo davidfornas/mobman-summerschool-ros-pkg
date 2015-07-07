@@ -31,7 +31,7 @@
 
 import rospy
 
-from std_msgs.msg import Int32
+from std_msgs.msg import Int8MultiArray
 
 import sys, select, termios, tty
 
@@ -48,13 +48,16 @@ anything else : stop smoothly
 CTRL-C to quit
 """
 
+#Mapping is dependent on Wheel config.
 moveBindings = {
     'w':(1,1),
-    'a':(1,-1),
+    'a':(-1,1),
     's':(-1,-1),
-    'd':(-1,1),
-    'q':(1,0.4),
-    'e':(0.4,1)
+    'd':(1,-1),
+    'q':(0.4,1),
+    'e':(1,0.4),
+    'i':(1,0),
+    '0':(0,1)
 }
 
 speedBindings={
@@ -81,9 +84,8 @@ if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
     
     rospy.init_node('vehicle_teleop')
-    lpub = rospy.Publisher('/left_wheel_cmd', Int32, queue_size=5)
-    rpub = rospy.Publisher('/right_wheel_cmd', Int32, queue_size=5)
-
+    pub = rospy.Publisher('/wheels_cmd', Int8MultiArray, queue_size=5)
+    
     r = 0
     l = 0
 
@@ -130,6 +132,7 @@ if __name__=="__main__":
             target_l_speed = speed * l
 
             #Speed control with acceleration
+            '''
             if target_l_speed > control_l_speed:
                 control_l_speed = min( target_l_speed, control_l_speed + acc )
             elif target_l_speed < control_l_speed:
@@ -143,33 +146,34 @@ if __name__=="__main__":
                 control_r_speed = max( target_r_speed, control_r_speed - acc )
             else:
                 control_r_speed = target_r_speed
+	    '''
+            control_l_speed = target_l_speed
+            control_r_speed = target_r_speed
 
             #Publish speeds
-            lwheel = Int32()
-            rwheel = Int32()
-
-            lwheel.data = 90 + control_l_speed
-            rwheel.data = 90 + control_r_speed
-
-            rpub.publish(rwheel)
-            lpub.publish(lwheel)
+ 
+            wheels = Int8MultiArray()
+            #Sign account for servo orientation
+            wheels.data.append(90 - control_l_speed)
+            wheels.data.append(90 + control_r_speed)
+            pub.publish(wheels)
 
             #Debug
+            print("speed: {0}".format(speed))
             print("loop: {0}".format(count))
-            print("target: vl: {0}, wr: {1}".format(lwheel.data, rwheel.data))
+            print("target: vl: {0}, wr: {1}".format(wheels.data[0], wheels.data[1]))
 
     except:
         print e
 
     finally:
 
-        lwheel = Int32()
-        rwheel = Int32()
-
-        lwheel.data = 0
-        rwheel.data = 0
-
-        rpub.publish(rwheel)
-        lpub.publish(lwheel)
-
+        wheels = Int8MultiArray()
+        wheels.data.resize(2);
+        wheels.layout.dim_length = 1;
+        wheels.data_length = 2;
+        wheels.data.append(0)
+        wheels.data.append(0)
+        pub.publish(wheels)
+        
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
