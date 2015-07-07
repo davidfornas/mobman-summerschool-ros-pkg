@@ -10,6 +10,7 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/Int8MultiArray.h>
 
 #include <vehicle_interface/arduino_serial.h>
 #include <boost/make_shared.hpp>
@@ -21,7 +22,7 @@ class ArduinoInterface
   ros::NodeHandle nh_;
   boost::shared_ptr<ArdunioSerial> arduino_;
 
-  ros::Subscriber left_wheel_sub_, right_wheel_sub_, sonar_servo_sub_;
+  ros::Subscriber wheels_sub_, sonar_servo_sub_;
   ros::Publisher sonar_pub_, sonar_servo_pub_;
 
   //Sensors...
@@ -47,13 +48,12 @@ public:
     sonar_servo_pub_= nh_.advertise<std_msgs::Int32>("/sonar_servo_state", 1);
 
     //Subscribe to vehicle commands
-    left_wheel_sub_= nh_.subscribe("/left_wheel_cmd", 1, &ArduinoInterface::leftWheelCallback, this);
-    right_wheel_sub_= nh_.subscribe("/right_wheel_cmd", 1, &ArduinoInterface::rightWheelCallback, this);
+    wheels_sub_= nh_.subscribe("/wheels_cmd", 1, &ArduinoInterface::wheelsCallback, this);
     sonar_servo_sub_= nh_.subscribe("/sonar_servo_cmd", 1, &ArduinoInterface::sonarServoCallback, this);
 
     //Init sensors querying them...
     sonar_servo_state_ = 0;
-    sendCmd("SONAR", 0);
+    sendCmd("SONAR", 0, 0);
 
     timeout_ = 500; //Serial read timeout, Default 5000;
 
@@ -77,11 +77,10 @@ public:
 
 private:
 
-  void leftWheelCallback(const std_msgs::Int32::ConstPtr& msg);
-  void rightWheelCallback(const std_msgs::Int32::ConstPtr& msg);
+  void wheelsCallback(const std_msgs::Int8MultiArray::ConstPtr& msg);
   void sonarServoCallback(const std_msgs::Int32::ConstPtr& msg);
 
-  void sendCmd(std::string, int);
+  void sendCmd(std::string, int, int);
   void querySonar();
 
 };
