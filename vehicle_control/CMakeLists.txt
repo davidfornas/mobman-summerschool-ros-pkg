@@ -25,7 +25,7 @@ find_package(Boost REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
+#  INCLUDE_DIRS include
 #  LIBRARIES vehicle_interface
   CATKIN_DEPENDS geometry_msgs nav_msgs roscpp sensor_msgs std_msgs
   DEPENDS boost
@@ -37,7 +37,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include)
+#include_directories(include)
 include_directories(${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp executable
