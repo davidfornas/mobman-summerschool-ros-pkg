@@ -25,7 +25,7 @@ class ArduinoInterface
   boost::shared_ptr<ArdunioSerial> arduino_;
 
   ros::Subscriber wheels_sub_, sonar_servo_sub_;
-  ros::Publisher sonar_pub_, sonar_servo_pub_;
+  ros::Publisher sonar_pub_, sonar_servo_pub_ , laserScan_pub;
 
   //Sensors...
   int sonar_servo_state_;
@@ -48,6 +48,8 @@ public:
     //Publish sensors
     sonar_pub_= nh_.advertise<std_msgs::Int32>("/sonar", 1);
     sonar_servo_pub_= nh_.advertise<std_msgs::Int32>("/sonar_servo_state", 1);
+
+    laserScan_pub= nh_.advertise<sensor_msgs::LaserScan>("/sonarScan", 1);
 
     //Subscribe to vehicle commands
     wheels_sub_= nh_.subscribe("/wheels_cmd", 1, &ArduinoInterface::wheelsCallback, this);
@@ -74,8 +76,11 @@ public:
     sonar_servo_pub_.publish(ss);
   }
 
+
   //This operations are better done with the vehicle stopped.
-  void performSonarScan( float, float );
+  sensor_msgs::LaserScan performSonarScan( float, float );
+
+  void publishLaserScan(float, float);
 
 private:
 

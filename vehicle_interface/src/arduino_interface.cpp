@@ -53,23 +53,39 @@ void ArduinoInterface::querySonar()
   ROS_INFO_STREAM("Read: "<< buf);
 }
 
-void ArduinoInterface::performSonarScan( float angle_min, float angle_increment )
+sensor_msgs::LaserScan ArduinoInterface::performSonarScan( float angle_min, float angle_increment )
 {
   sensor_msgs::LaserScan scan;
-  scan.angle_min = angle_min;
-  scan.angle_max = 180 - angle_min;
-  scan.angle_increment = angle_increment;
+  scan.angle_min = angle_min*3.14/180;
+  scan.angle_max = (160 - angle_min)*3.14/180;
+  scan.angle_increment = angle_increment*3.14/180;
 
   scan.header.frame_id = "/sonar";
   scan.header.stamp = ros::Time::now();
 
+  scan.range_min=0.0;
+  scan.range_max=10.0;
+
   //For this application angle_max is mirrored from 90 deg.
-  for(float angle = angle_min; angle <= 180 - angle_min; angle += angle_increment){
+  for(float angle = angle_min; angle <= 160 - angle_min; angle += angle_increment){
     sendCmd("SERVO", (int) angle, 0);
-    ros::Duration(1.5).sleep();
-    querySonar();
-    scan.ranges.push_back(sonar_);
+    ros::Duration(2.0).sleep();
+    double value=0;
+    for(int i=0;i<10;i++){
+      querySonar();
+      ros::Duration(0.3).sleep();
+      value+=sonar_;
+    }
+    scan.ranges.push_back(value*0.0001);
   }
   ROS_INFO_STREAM(scan);
+
+  return scan;
+}
+
+
+void ArduinoInterface::publishLaserScan(float init_angle=10, float angle_incr=10){
+  sensor_msgs::LaserScan scan=performSonarScan(10,10);
+  laserScan_pub.publish(scan);
 }
 
