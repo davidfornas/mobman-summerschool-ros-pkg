@@ -96,6 +96,10 @@ if __name__=="__main__":
     target_l_speed = 0
     control_r_speed = 0
     control_l_speed = 0
+
+    last_l=0
+    last_r=0
+
     try:
         print msg
         while(1):
@@ -156,11 +160,17 @@ if __name__=="__main__":
             #Sign account for servo orientation
             wheels.data.append(90 - control_l_speed)
             wheels.data.append(90 + control_r_speed)
-            pub.publish(wheels)
+            
+	    #Use this if only if the sonar is not updating continuously
+	    if(last_l != wheels.data[0] or last_r != wheels.data[1]):
+	        pub.publish(wheels)
+	        print("PUBLISHInG")
+		last_l = wheels.data[0]
+	    last_r = wheels.data[1]
 
             #Debug
-            print("speed: {0}".format(speed))
-            print("loop: {0}".format(count))
+            #print("speed: {0}".format(speed))
+            #print("loop: {0}".format(count))
             print("target: vl: {0}, wr: {1}".format(wheels.data[0], wheels.data[1]))
 
     except:

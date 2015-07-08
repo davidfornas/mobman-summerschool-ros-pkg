@@ -1,4 +1,5 @@
 #include <vehicle_interface/arduino_interface.h>
+
 #include <sstream>
 #include <string>
 
@@ -51,3 +52,24 @@ void ArduinoInterface::querySonar()
   sonar_ = atof(buf);
   ROS_INFO_STREAM("Read: "<< buf);
 }
+
+void ArduinoInterface::performSonarScan( float angle_min, float angle_increment )
+{
+  sensor_msgs::LaserScan scan;
+  scan.angle_min = angle_min;
+  scan.angle_max = 180 - angle_min;
+  scan.angle_increment = angle_increment;
+
+  scan.header.frame_id = "/sonar";
+  scan.header.stamp = ros::Time::now();
+
+  //For this application angle_max is mirrored from 90 deg.
+  for(float angle = angle_min; angle <= 180 - angle_min; angle += angle_increment){
+    sendCmd("SERVO", (int) angle, 0);
+    ros::Duration(1.5).sleep();
+    querySonar();
+    scan.ranges.push_back(sonar_);
+  }
+  ROS_INFO_STREAM(scan);
+}
+

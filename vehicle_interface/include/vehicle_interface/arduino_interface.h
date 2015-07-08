@@ -12,6 +12,8 @@
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int8MultiArray.h>
 
+#include <sensor_msgs/LaserScan.h>
+
 #include <vehicle_interface/arduino_serial.h>
 #include <boost/make_shared.hpp>
 
@@ -53,11 +55,8 @@ public:
 
     //Init sensors querying them...
     sonar_servo_state_ = 0;
-    sendCmd("SONAR", 0, 0);
 
     timeout_ = 500; //Serial read timeout, Default 5000;
-
-    querySonar();
     publishSonar();
 
     ROS_INFO("Vehicle topics initialized. Issue commands now.");
@@ -74,6 +73,9 @@ public:
     sonar_pub_.publish(s);
     sonar_servo_pub_.publish(ss);
   }
+
+  //This operations are better done with the vehicle stopped.
+  void performSonarScan( float, float );
 
 private:
 
