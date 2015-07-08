@@ -42,7 +42,7 @@ void moveWheels(String lspd, String rspd){
   Serial.print("Moving right wheel at speed: ");
   Serial.println(rspd.toInt());
   right_servo.write(rspd.toInt());  
-  mySerial.println("MOVED");
+  //mySerial.println("MOVED");
   servo_counter=0;
 }   
 
@@ -51,7 +51,7 @@ void moveWheels(String lspd, String rspd){
   Serial.print("Moving sonar to position: ");
   Serial.println(spd.toInt());
   sonar_servo.write(spd.toInt());  
-  mySerial.println("MOVED");                
+  //mySerial.println("MOVED");                
 }  
         
 void sense(){
@@ -59,6 +59,7 @@ void sense(){
   digitalWrite(MEASURE, HIGH);          // Activa medidor de distancia
   delay(10);                          // Para dar tiempo a realizar la primera medición
 
+  //ANALOGICA, 5V
   //Reading parameters
   Serial.println("Sensing...");
   distance = analogRead(SENSOR);    // Realiza medición de distancia
@@ -69,6 +70,7 @@ void sense(){
   Serial.print(mm);
   Serial.println(" milimetros");
   
+  //DIGITAL PWM, 12V
   while (!ok); // Esperamos a una medición válida
   Serial.print("Distancia... ");
   Serial.print(count);
