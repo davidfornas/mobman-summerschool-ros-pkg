@@ -89,6 +89,7 @@ private:
 
   void sendCmd(std::string, int, int);
   void querySonar();
+  double sonarFilter(int n);
 
 };
 
