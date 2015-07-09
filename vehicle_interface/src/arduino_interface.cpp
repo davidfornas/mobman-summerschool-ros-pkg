@@ -81,7 +81,7 @@ sensor_msgs::LaserScan ArduinoInterface::performSonarScan( float angle_min, floa
 
 void ArduinoInterface::publishLaserScan(float init_angle=10, float angle_incr=10){
   sensor_msgs::LaserScan scan=performSonarScan(10,10);
-  laserScan_pub.publish(scan);
+  sonar_scan_pub.publish(scan);
 }
 
 double ArduinoInterface::sonarFilter(int n)

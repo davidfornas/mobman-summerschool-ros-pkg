@@ -26,7 +26,7 @@ class ArduinoInterface
   boost::shared_ptr<ArdunioSerial> arduino_;
 
   ros::Subscriber wheels_sub_, sonar_servo_sub_;
-  ros::Publisher sonar_pub_, sonar_servo_pub_ , laserScan_pub;
+  ros::Publisher sonar_pub_, sonar_servo_pub_ , sonar_scan_pub;
 
   ros::ServiceServer serviceServer;
 
@@ -52,14 +52,14 @@ public:
     sonar_pub_= nh_.advertise<std_msgs::Int32>("/sonar", 1);
     sonar_servo_pub_= nh_.advertise<std_msgs::Int32>("/sonar_servo_state", 1);
 
-    laserScan_pub= nh_.advertise<sensor_msgs::LaserScan>("/sonarScan", 1);
+    sonar_scan_pub= nh_.advertise<sensor_msgs::LaserScan>("/sonar_scan", 1);
 
     //Subscribe to vehicle commands
     wheels_sub_= nh_.subscribe("/wheels_cmd", 1, &ArduinoInterface::wheelsCallback, this);
     sonar_servo_sub_= nh_.subscribe("/sonar_servo_cmd", 1, &ArduinoInterface::sonarServoCallback, this);
 
     //Create sonarScan service
-    serviceServer = nh_.advertiseService( "/sonarScanService", &ArduinoInterface::sonarScanCallback,this);
+    serviceServer = nh_.advertiseService( "/sonar_scan_service", &ArduinoInterface::sonarScanCallback,this);
 
     //Init sensors querying them...
     sonar_servo_state_ = 0;
