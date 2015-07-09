@@ -105,3 +105,8 @@ double ArduinoInterface::sonarFilter(int n)
   return ((double)sum)/(n-4);
 }
 
+bool  ArduinoInterface::sonarScanCallback(vehicle_interface::sonarScan::Request  &req, vehicle_interface::sonarScan::Response &res){
+  res.scan=performSonarScan(req.startAngle,req.angleIncr);
+  return true;
+}
+

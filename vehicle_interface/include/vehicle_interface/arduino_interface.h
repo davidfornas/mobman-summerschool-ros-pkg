@@ -16,6 +16,7 @@
 
 #include <vehicle_interface/arduino_serial.h>
 #include <boost/make_shared.hpp>
+#include <vehicle_interface/sonarScan.h>
 
 /** Interface between ROS and Arduino */
 class ArduinoInterface
@@ -26,6 +27,8 @@ class ArduinoInterface
 
   ros::Subscriber wheels_sub_, sonar_servo_sub_;
   ros::Publisher sonar_pub_, sonar_servo_pub_ , laserScan_pub;
+
+  ros::ServiceServer serviceServer;
 
   //Sensors...
   int sonar_servo_state_;
@@ -54,6 +57,9 @@ public:
     //Subscribe to vehicle commands
     wheels_sub_= nh_.subscribe("/wheels_cmd", 1, &ArduinoInterface::wheelsCallback, this);
     sonar_servo_sub_= nh_.subscribe("/sonar_servo_cmd", 1, &ArduinoInterface::sonarServoCallback, this);
+
+    //Create sonarScan service
+    serviceServer = nh_.advertiseService( "/sonarScanService", &ArduinoInterface::sonarScanCallback,this);
 
     //Init sensors querying them...
     sonar_servo_state_ = 0;
@@ -86,6 +92,7 @@ private:
 
   void wheelsCallback(const std_msgs::Int8MultiArray::ConstPtr& msg);
   void sonarServoCallback(const std_msgs::Int32::ConstPtr& msg);
+  bool sonarScanCallback(vehicle_interface::sonarScan::Request  &req, vehicle_interface::sonarScan::Response &res);
 
   void sendCmd(std::string, int, int);
   void querySonar();

@@ -10,6 +10,19 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
+  message_generation
+)
+
+add_service_files(
+  FILES
+  sonarScan.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  roscpp
+  std_msgs
+  sensor_msgs
 )
 
 find_package(Boost REQUIRED)
