@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   image_transport
+  std_srvs
 )
 
 ###################################
@@ -27,7 +28,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
    INCLUDE_DIRS include
 #  LIBRARIES vehicle_perception
-  CATKIN_DEPENDS cv_bridge geometry_msgs nav_msgs roscpp sensor_msgs image_transport
+  CATKIN_DEPENDS cv_bridge geometry_msgs nav_msgs roscpp sensor_msgs image_transport std_srvs
   DEPENDS OpenCV
 )
 

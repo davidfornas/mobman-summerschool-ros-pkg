@@ -7,7 +7,7 @@
   <maintainer email="dfornas@uji.es">David Fornas</maintainer>
   <license>BSD</license>
   <url type="website">http://www.irs.uji.es/summerschool2015 </url>
-  <author email="dfornas@uji.es">David Fornas</author> 
+  <author email="dfornas@uji.es">David Fornas and Javier Pérez</author> 
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>geometry_msgs</build_depend>

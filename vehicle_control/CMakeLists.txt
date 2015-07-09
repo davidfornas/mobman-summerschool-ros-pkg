@@ -41,7 +41,9 @@ catkin_package(
 include_directories(${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp executable
-add_executable(controller src/controller.cpp)
+add_executable(maze_navigation src/maze_navigation.cpp)
+add_executable(object_search src/object_search.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(controller ${catkin_LIBRARIES})
+target_link_libraries(maze_navigation ${catkin_LIBRARIES})
+target_link_libraries(object_search ${catkin_LIBRARIES})
