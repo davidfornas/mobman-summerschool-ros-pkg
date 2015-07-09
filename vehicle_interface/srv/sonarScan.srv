@@ -1,0 +1,4 @@
+float64 startAngle
+float64 angleIncr
+---
+sensor_msgs/LaserScan scan

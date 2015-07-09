@@ -12,11 +12,11 @@ int main(int argc, char *argv[])
 
   ArduinoInterface interface(device.c_str());
 
-  ros::Rate r(2);
+  ros::Rate r(25);
 
   while(ros::ok()){
     //interface.publishSonar();
-    //interface.performSonarScan(10,10);
+    //interface.publishLaserScan(10,10);
     r.sleep();
     ros::spinOnce();
   }
