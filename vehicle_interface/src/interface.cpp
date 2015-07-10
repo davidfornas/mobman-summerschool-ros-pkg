@@ -13,12 +13,14 @@ int main(int argc, char *argv[])
   ArduinoInterface interface(device.c_str());
 
   ros::Rate r(25);
+  int count = 0;
 
   while(ros::ok()){
-    //interface.publishSonar();
+    if(count % 100 == 0) interface.publishSonar();
     //interface.publishLaserScan(10,10);
     r.sleep();
     ros::spinOnce();
+    count++;
   }
 }
 

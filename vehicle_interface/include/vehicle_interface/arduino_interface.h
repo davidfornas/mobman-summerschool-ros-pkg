@@ -10,7 +10,7 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Int32.h>
-#include <std_msgs/Int8MultiArray.h>
+#include <std_msgs/Int32MultiArray.h>
 
 #include <sensor_msgs/LaserScan.h>
 
@@ -37,6 +37,8 @@ class ArduinoInterface
   //Timeout to comunicate with ArduinoSerial
   int timeout_;
 
+  int lwheel_threshold_, rwheel_threshold_;
+
 public:
 
   /** Constructor.
@@ -46,6 +48,12 @@ public:
   {
     arduino_ = boost::make_shared<ArdunioSerial>(serialport, 9600);
     if(!arduino_->ok()) ROS_ERROR("Could not open port.");
+
+    lwheel_threshold_ = 0;
+    rwheel_threshold_ = 0;
+    nh_.getParam("lwheel_threshold", lwheel_threshold_);
+    nh_.getParam("rwheel_threshold", rwheel_threshold_);
+
 
     //Use params to configure topics...
     //Publish sensors
@@ -90,7 +98,7 @@ public:
 
 private:
 
-  void wheelsCallback(const std_msgs::Int8MultiArray::ConstPtr& msg);
+  void wheelsCallback(const std_msgs::Int32MultiArray::ConstPtr& msg);
   void sonarServoCallback(const std_msgs::Int32::ConstPtr& msg);
   bool sonarScanCallback(vehicle_interface::sonarScan::Request  &req, vehicle_interface::sonarScan::Response &res);
 

@@ -31,7 +31,7 @@
 
 import rospy
 
-from std_msgs.msg import Int8MultiArray
+from std_msgs.msg import Int32MultiArray
 
 import sys, select, termios, tty
 
@@ -75,7 +75,7 @@ def getKey():
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
     return key
 
-speed = 25
+speed = 50
 
 def vel(speed):
     return "currently:\tspeed %s" % (speed)
@@ -84,7 +84,7 @@ if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
     
     rospy.init_node('vehicle_teleop')
-    pub = rospy.Publisher('/wheels_cmd', Int8MultiArray, queue_size=5)
+    pub = rospy.Publisher('/wheels_cmd', Int32MultiArray, queue_size=5)
     
     r = 0
     l = 0
@@ -131,7 +131,7 @@ if __name__=="__main__":
                 if (key == '\x03'):
                     break
 
-            acc=speed/10
+            #acc=speed/10
             target_r_speed = speed * r
             target_l_speed = speed * l
 
@@ -156,7 +156,7 @@ if __name__=="__main__":
 
             #Publish speeds
  
-            wheels = Int8MultiArray()
+            wheels = Int32MultiArray()
             #Sign account for servo orientation
             wheels.data.append(90 - control_l_speed)
             wheels.data.append(90 + control_r_speed)
@@ -178,7 +178,7 @@ if __name__=="__main__":
 
     finally:
 
-        wheels = Int8MultiArray()
+        wheels = Int32MultiArray()
         wheels.data.resize(2);
         wheels.layout.dim_length = 1;
         wheels.data_length = 2;

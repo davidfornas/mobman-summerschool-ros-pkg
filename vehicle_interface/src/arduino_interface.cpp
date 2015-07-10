@@ -3,10 +3,10 @@
 #include <sstream>
 #include <string>
 
-void ArduinoInterface::wheelsCallback(const std_msgs::Int8MultiArray::ConstPtr& msg)
+void ArduinoInterface::wheelsCallback(const std_msgs::Int32MultiArray::ConstPtr& msg)
 {
-  sendCmd("WHEELS", msg->data[0], msg->data[1]);
-  ROS_INFO_STREAM("Sent " << msg->data[0] << ", " << msg->data[1]  << " to the wheels.");
+  sendCmd("WHEELS", msg->data[0] + lwheel_threshold_, msg->data[1] + rwheel_threshold_);
+  ROS_INFO_STREAM("Sent " << msg->data[0]+lwheel_threshold_ << ", " << msg->data[1]+rwheel_threshold_  << " to the wheels.");
 }
 
 void ArduinoInterface::sonarServoCallback(const std_msgs::Int32::ConstPtr& msg)
