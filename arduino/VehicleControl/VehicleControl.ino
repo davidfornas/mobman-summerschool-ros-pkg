@@ -1,43 +1,30 @@
 #include <Servo.h>
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(4, 5); // RX, TX
-
-void issueCommand(String command, String param1, String param2){
-  if(command=="SERVO"){
-    moveSonar(param1);
-  }
-  else if(command=="WHEELS"){
-    moveWheels(param1, param2);
-  }
-  else if(command=="SONAR"){
-  mySerial.println(mm);
-  }
-  else{   
-    mySerial.println("BAD COMMAND");
-  }        
-} 
+// Bluetooth virtual serial port
+SoftwareSerial mySerial(6, 7); // RX, TX
 
 Servo left_servo, right_servo;     // Servos for the wheels
 Servo sonar_servo;  // Servo for the sonar ranger
-int pos = 90;     // Right servo position
 
-// Uso de interrupciones para medir 
-#define INTERRUPT_INPUT 3        // Entrada asignada a la interrupción
-#define SENSOR 0        // Puerto A/D del medidor de distancias
-#define MEASURE 2          // Pin para activar la medición
+#define SENSOR 0        // A/D sonar port
+#define MEASURE 2          // Pin to enable measuring
 
-int distance = 0;      // A/D conversion value
-float mm = 0;          // A/D value to mm
-int servo_counter=0; //To shutdown the servos after x miliseconds
-
-volatile int count = 0;
-volatile int ok = LOW;  // Valid measure
-volatile unsigned long now = 0;
-volatile unsigned long before = 0;
+//Make actions depending on the command
+void issueCommand(String command, String param1, String param2){
+  if(command=="SERVO"){
+      moveSonar(param1);   
+  }else if(command=="WHEELS"){
+    moveWheels(param1, param2);
+  }else if(command=="SONAR"){
+    //Choose 5V or 12V depending on the sonar model.
+    sense12v();
+  }else{   
+    mySerial.println("Unrecognized Command");
+  }        
+} 
 
 void moveWheels(String lspd, String rspd){
-
   Serial.print("Moving left wheel at speed: ");
   Serial.println(lspd.toInt());
   left_servo.write(lspd.toInt());  
@@ -45,31 +32,29 @@ void moveWheels(String lspd, String rspd){
   Serial.print("Moving right wheel at speed: ");
   Serial.println(rspd.toInt());
   right_servo.write(rspd.toInt());
-  servo_counter=0;
 }   
 
 void moveSonar(String spd){   
   //Reading parameters
   Serial.print("Moving sonar to position: ");
   Serial.println(spd.toInt());
-  sonar_servo.write(spd.toInt());  
-  mySerial.println("MOVED");                
+  sonar_servo.write(spd.toInt());          
 }  
 
 //Use 5V sonar, analog
 void sense5v(){
+  
   digitalWrite(MEASURE, HIGH);          // Activa medidor de distancia
   delay(10);                          // Para dar tiempo a realizar la primera medición
 
-  //ANALOGICA, 5V
-  
+  //ANALOG READING, 5V  sonar
   //Reading parameters
   Serial.println("Sensing...");
-  distance = analogRead(SENSOR);    // Realiza medición de distancia
+  int distance = analogRead(SENSOR);    // Realiza medición de distancia
   Serial.print("Distancia... ");
   Serial.print(distance);
   Serial.print(" cuentas = ");
-  mm = distance / 2 * 25,4 / 100;    // Convierte valor del D/A a mm
+  float mm = (float)distance / 2 * 25.4 / 100;    // Convierte valor del D/A a mm
   Serial.print(mm);
   Serial.println(" milimetros");
   mySerial.println(mm);
@@ -79,12 +64,15 @@ void sense5v(){
 
 //Use 12V sonar, PWM
 void sense12v(){ 
-
-  before = micros();                   // Instante actual
-  digitalWrite(MEASURE, HIGH);          // Activa medidor de distancia
+  
+  int ok = LOW;  // Valid measure
+  unsigned long before = micros();
+  
+  digitalWrite(MEASURE, HIGH);          // Activate distance sonar
   delay(3);                           // Pulso de más de 2ms de duración para provocar medición
-  digitalWrite(MEASURE, LOW);           // Inicia medición
-  pos = 0;
+  digitalWrite(MEASURE, LOW);           // Stop pulse to measure
+  
+  int pos = 0;
   do
   {
     ok = digitalRead(3);
@@ -93,21 +81,22 @@ void sense12v(){
   while (ok);                       // Espera desaparición detección propio pulso
   do
   {
+    
     ok = digitalRead(3);
     pos +=1;
   }
   while (!ok);                       // Espera medición
 
-  now = micros();                    // Instante recepción eco
-  count = now - before;             // Tiempo transcurrido durante la medición en microsegundos
+  unsigned long now = micros();                    // Instante recepción eco
+  int count = now - before;             // Tiempo transcurrido durante la medición en microsegundos
   Serial.print("pos = ");
   Serial.println(pos);
   Serial.print("Distancia... ");
   Serial.print(count);
   Serial.print(" us= ");
-  mm = (float)count * (float)0.170;    // Convierte valor del PWM a mm
+  float mm = (float)count * (float)0.170;    // Convierte valor del PWM a mm
   Serial.print(mm);
-  Serial.println(" milimetros");
+  Serial.println(" mm.");
   Serial.println(" ");
   mySerial.println(mm);
 }   
@@ -123,9 +112,9 @@ void setup()
   moveWheels("90", "90");
   moveSonar("90");    
 
-  pinMode(INTERRUPT_INPUT, INPUT);           // Pin de entrada del medidor
   pinMode(MEASURE, OUTPUT);            // Señal de disparo del medidor
   digitalWrite(MEASURE, LOW);          // Inhibe mediciones
+
 
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
@@ -159,17 +148,12 @@ void loop()
         readingParam1=true; 
       }
     }
-    Serial.print("Received command: ");
-    Serial.println(command);
-    Serial.print("With parameter 1: ");
-    Serial.println(param1);
-    Serial.print("With parameter 2: ");
-    Serial.println(param2);
+    Serial.print("Received command: ");    Serial.println(command);
+    Serial.print("With parameter 1: ");       Serial.println(param1);
+    Serial.print("With parameter 2: ");       Serial.println(param2);
     issueCommand(command, param1, param2);
-
   }
-  delay(20);                   // Insertamos una espera
-
+  delay(20); 
 }
 
 
