@@ -1,6 +1,9 @@
 <launch>
   
   <param name="device" value="/dev/rfcomm0" />  
+  <param name="rwheel_threshold" value="5" />  
+  <param name="lwheel_threshold" value="2" />  
+
   <node name="interface" pkg="vehicle_interface" type="interface" output="screen" respawn="false"/>
   
 </launch>

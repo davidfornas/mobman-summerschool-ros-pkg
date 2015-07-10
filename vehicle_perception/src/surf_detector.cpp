@@ -129,12 +129,11 @@ void SurfDetector::imageCb(const sensor_msgs::ImageConstPtr& msg)
     setHomography(H);
     valid = true;
     state.data = "Template succesfully found.";
-    status_pub_.publish(state);
   }else{
     ROS_ERROR("H seems to be wrong.");
     state.data = "Template not found.";
-    status_pub_.publish(state);
   }
+  status_pub_.publish(state);
 
 
   //-- Get the corners from the image_1 ( the object to be "detected" )
@@ -181,8 +180,8 @@ void SurfDetector::imageCb(const sensor_msgs::ImageConstPtr& msg)
 
   //Publish image error from centroid
   std_msgs::Int32 x, y;
-  x.data = centroid.x;
-  y.data = centroid.y;
+  x.data = valid ? centroid.x : 0;
+  y.data = valid ? centroid.y : 0;
   error_x_pub_.publish(x);
   error_y_pub_.publish(y);
 
