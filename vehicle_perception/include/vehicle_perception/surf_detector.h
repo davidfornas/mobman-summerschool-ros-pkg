@@ -6,6 +6,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/String.h>
 
 #include "opencv2/opencv.hpp"
 
@@ -17,6 +18,7 @@ class SurfDetector
   image_transport::ImageTransport it_;
   image_transport::Subscriber image_sub_;
   image_transport::Publisher image_pub_;
+  ros::Publisher status_pub_;
 
   // Target error
   ros::Publisher error_x_pub_, error_y_pub_;
@@ -28,13 +30,14 @@ class SurfDetector
   bool display_;
 
 public:
-  SurfDetector(std::string input_topic, std::string output_topic, std::string error_topic, std::string template_path) :
+  SurfDetector(std::string input_topic, std::string output_topic, std::string error_topic, std::string status_topic, std::string template_path) :
       it_(nh_)
   {
     // Subscribe to input video feed and publish output debug video feed
     image_transport::TransportHints hints("compressed", ros::TransportHints());
     image_sub_ = it_.subscribe(input_topic, 1, &SurfDetector::imageCb, this, hints);
     image_pub_ = it_.advertise(output_topic, 1);
+    status_pub_ = nh_.advertise<std_msgs::String>(status_topic, 1);
 
     //Publish image error
     error_x_pub_ = nh_.advertise<std_msgs::Int32>(error_topic+std::string("_x"), 1);

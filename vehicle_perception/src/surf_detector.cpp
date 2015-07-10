@@ -120,14 +120,21 @@ void SurfDetector::imageCb(const sensor_msgs::ImageConstPtr& msg)
   double inliers_ratio = num_inliers * 100.0 / good_matches.size();
   std::cout << "Number of inliers: " << num_inliers << "Percentage: " << inliers_ratio << std::endl;
 
+  std_msgs::String state;
+
   bool valid = false;
   //If the homography is considered valid, store it
   if((inliers_ratio>40 && rotation_error < 1.5) || (inliers_ratio>20 && rotation_error < 0.8) || (inliers_ratio>10 && rotation_error < 0.3)){
     ROS_INFO("H seems to be valid.");
     setHomography(H);
     valid = true;
-  }else
+    state.data = "Template succesfully found.";
+    status_pub_.publish(state);
+  }else{
     ROS_ERROR("H seems to be wrong.");
+    state.data = "Template not found.";
+    status_pub_.publish(state);
+  }
 
 
   //-- Get the corners from the image_1 ( the object to be "detected" )

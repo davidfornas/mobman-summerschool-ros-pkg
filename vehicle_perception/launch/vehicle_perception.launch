@@ -1,13 +1,13 @@
 <launch>
   
-  <param name="image_topic" value="/phone1/camera/image" />
+  <param name="image_topic" value="/camera/image" />
   <param name="debug_image" value="/debug" />
   <param name="error_topic" value="/error" />
   <param name="status_topic" value="/status" />
-  <param name="template_file_path" value="$(find vehicle_perception)/resources/clip.jpg" />
+  <param name="template_file_path" value="$(find vehicle_perception)/resources/box_template.jpg" />
   <param name="display_image" value="false)" />
   
-  <node name="small_clip_detector" pkg="vehicle_perception" type="surf_detection_example" output="screen" respawn="false"/>
+  <node name="small_box_detector" pkg="vehicle_perception" type="surf_detection_example" output="screen" respawn="false"/>
   
 </launch>
 
