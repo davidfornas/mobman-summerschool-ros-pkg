@@ -62,11 +62,15 @@ def getKey():
 def pos(p):
     return "currently:\t%s degrees" % (p)
 
+def callback(data):
+    rospy.loginfo(rospy.get_caller_id() + "Sonar reading %s", data.data)
+
 if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
     
     rospy.init_node('sonar_teleop')
     pub = rospy.Publisher('/sonar_servo_cmd', Int32, queue_size=5)
+    rospy.Subscriber("/sonar", Int32, callback)
 
     status = 90
     try:
@@ -92,6 +96,7 @@ if __name__=="__main__":
             servo = Int32()
             servo.data = status            
             pub.publish(servo)
+            rospy.spin()
 
             #print("servo pos: {0}".format(servo))
 
