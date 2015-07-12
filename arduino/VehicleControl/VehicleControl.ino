@@ -4,7 +4,7 @@
 // Bluetooth virtual serial port
 SoftwareSerial mySerial(6, 7); // RX, TX
 
-Servo left_servo, right_servo; // Servos for the wheels
+Servo left_servo, right_servo, jaw_servo; // Servos for the wheels
 Servo sonar_servo;               // Servo for the sonar ranger
 
 #define SENSOR 0     // A/D sonar port
@@ -18,7 +18,7 @@ void issueCommand(String command, String param1, String param2){
 		moveWheels(param1, param2);
 	}else if(command=="SONAR"){
 		// WARNING! Choose 5V or 12V depending on the sonar model.
-		sense12v();
+		sense5v();
 	}else{   
 		mySerial.println("Unrecognized Command");
 	}        
@@ -103,6 +103,7 @@ void setup()
 	right_servo.attach(9);        // Right servo is pin 9 (OUTPUT 2 of TINKERKIT)
 	left_servo.attach(10);       // Left servo is pin 10 (OUTPUT 1 of TINKERKIT)
 	sonar_servo.attach(11);    // Sonar servo is pin 11 (OUTPUT 0 of TINKERKIT)
+	//jaw_servo.attach(5);    // Sonar servo is pin 11 (OUTPUT 0 of TINKERKIT)
 
 	//  Init position
 	moveWheels("90", "90");
