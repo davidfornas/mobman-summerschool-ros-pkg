@@ -45,4 +45,4 @@ include_directories( include ${catkin_INCLUDE_DIRS})
 add_executable(surf_detection_example src/surf_detection_example.cpp src/surf_detector.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(surf_detection_example ${catkin_LIBRARIES})
+target_link_libraries(surf_detection_example ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
