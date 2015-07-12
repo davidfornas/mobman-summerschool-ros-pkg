@@ -4,8 +4,11 @@
 // Bluetooth virtual serial port
 SoftwareSerial mySerial(6, 7); // RX, TX
 
-Servo left_servo, right_servo, jaw_servo; // Servos for the wheels
+Servo left_servo, right_servo;   // Servos for the wheels
 Servo sonar_servo;               // Servo for the sonar ranger
+//Uncomment this line and all the related lines to use the gripper servo
+///Servo jaw_servo;
+
 
 #define SENSOR 0     // A/D sonar port
 #define MEASURE 2   // Pin to enable sonar measuring
@@ -19,6 +22,11 @@ void issueCommand(String command, String param1, String param2){
 	}else if(command=="SONAR"){
 		// WARNING! Choose 5V or 12V depending on the sonar model.
 		sense5v();
+		//sense12v();
+        /*}else if(command=="OPEN"){
+		openGripper();
+        }else if(command=="CLOSE"){
+		closeGripper();*/
 	}else{   
 		mySerial.println("Unrecognized Command");
 	}        
@@ -41,6 +49,18 @@ void moveSonar(String spd){
 	Serial.println(spd.toInt());
 	sonar_servo.write(spd.toInt());          
 }  
+
+/*
+void openGripper(){   
+	Serial.print("Opening gripper.");
+	jaw_servo.write(80);          
+} 
+
+void closeGripper(){   
+	Serial.print("Closing gripper.");
+	jaw_servo.write(40);          
+} 
+*/
 
 //Use 5V sonar (analog)
 void sense5v(){
@@ -103,11 +123,12 @@ void setup()
 	right_servo.attach(9);        // Right servo is pin 9 (OUTPUT 2 of TINKERKIT)
 	left_servo.attach(10);       // Left servo is pin 10 (OUTPUT 1 of TINKERKIT)
 	sonar_servo.attach(11);    // Sonar servo is pin 11 (OUTPUT 0 of TINKERKIT)
-	//jaw_servo.attach(5);    // Sonar servo is pin 11 (OUTPUT 0 of TINKERKIT)
+	///jaw_servo.attach(5);    // Gripper servo is pin 5 (OUTPUT 4 of TINKERKIT)
 
 	//  Init position
 	moveWheels("90", "90");
-	moveSonar("90");    
+	moveSonar("90"); 
+	///openGripper();     
 
 	pinMode(MEASURE, OUTPUT);    // Measuring start signal
 	digitalWrite(MEASURE, LOW);      // Avoid start measuring
