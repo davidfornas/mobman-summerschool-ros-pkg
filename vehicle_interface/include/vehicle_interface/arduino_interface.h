@@ -25,13 +25,14 @@ class ArduinoInterface
   ros::NodeHandle nh_;
   boost::shared_ptr<ArdunioSerial> arduino_;
 
-  ros::Subscriber wheels_sub_, sonar_servo_sub_;
+  ros::Subscriber wheels_sub_, sonar_servo_sub_, gripper_sub_;
   ros::Publisher sonar_pub_, sonar_servo_pub_ , sonar_scan_pub;
 
   ros::ServiceServer serviceServer;
 
   //Sensors...
   int sonar_servo_state_;
+  int gripper_state_; //modificado
   int sonar_;
 
   //Timeout to comunicate with ArduinoSerial
@@ -65,6 +66,9 @@ public:
     //Subscribe to vehicle commands
     wheels_sub_= nh_.subscribe("/wheels_cmd", 1, &ArduinoInterface::wheelsCallback, this);
     sonar_servo_sub_= nh_.subscribe("/sonar_servo_cmd", 1, &ArduinoInterface::sonarServoCallback, this);
+
+    //modificado
+    gripper_sub_ = nh_.subscribe("/gripper", 1, &ArduinoInterface::gripperCallback, this);
 
     //Create sonarScan service
     serviceServer = nh_.advertiseService( "/sonar_scan_service", &ArduinoInterface::sonarScanCallback,this);
@@ -100,6 +104,7 @@ private:
 
   void wheelsCallback(const std_msgs::Int32MultiArray::ConstPtr& msg);
   void sonarServoCallback(const std_msgs::Int32::ConstPtr& msg);
+  void gripperCallback(const std_msgs::Int32::ConstPtr& msg); //modificado
   bool sonarScanCallback(vehicle_interface::sonarScan::Request  &req, vehicle_interface::sonarScan::Response &res);
 
   void sendCmd(std::string, int, int);

@@ -4,7 +4,7 @@
   <param name="debug_image" value="/debug" />
   <param name="error_topic" value="/error" />
   <param name="status_topic" value="/status" />
-  <param name="template_file_path" value="$(find vehicle_perception)/resources/box_template.jpg" />
+  <param name="template_file_path" value="$(find vehicle_perception)/resources/box_template2.jpg" />
   <param name="display_image" value="false)" />
   
   <node name="small_box_detector" pkg="vehicle_perception" type="surf_detection_example" output="screen" respawn="false"/>

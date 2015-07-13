@@ -16,28 +16,35 @@ int main(int argc, char *argv[])
   ros::NodeHandle nh;
 
   ros::Publisher wheels_pub;
+  ros::Publisher gripper_pub; //modificado
   ros::Subscriber error_x_sub;
 
   //Publish sensors
   wheels_pub = nh.advertise<std_msgs::Int32MultiArray>("/wheels_cmd", 1);
   error_x_sub = nh.subscribe("/error_x", 1, errorCallback);
 
+  //modificado
+  gripper_pub = nh.advertise<std_msgs::Int32>("/gripper", 1);
+
   ros::Rate r(1);
 
   while(ros::ok()){
 
     std_msgs::Int32MultiArray control;
+    std_msgs::Int32 controlGripper;
     control.data.push_back(90);
     control.data.push_back(90);
 
-    if(error_x > 600){
-    control.data[0] = 80;
-    control.data[1] = 80;
-    wheels_pub.publish(control);
-    }else if(error_x < 400){
-      control.data[0] = 100;
-      control.data[1] = 100;
-      wheels_pub.publish(control);
+    if(error_x > 100){
+      controlGripper.data = 1;
+      //control.data[1] = 80;
+      gripper_pub.publish(controlGripper);
+    }else if(error_x < 100){
+      //control.data[0] = 100;
+      //control.data[1] = 100;
+      //wheels_pub.publish(control);
+      controlGripper.data = 0;
+      gripper_pub.publish(controlGripper);
     }
 
     ros::Duration(0.5).sleep();

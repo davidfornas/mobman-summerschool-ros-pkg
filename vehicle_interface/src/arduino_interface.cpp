@@ -16,6 +16,20 @@ void ArduinoInterface::sonarServoCallback(const std_msgs::Int32::ConstPtr& msg)
   sonar_servo_state_ = msg->data;
 }
 
+
+//modificado
+void ArduinoInterface::gripperCallback(const std_msgs::Int32::ConstPtr& msg)
+{
+  if (msg->data == 1)
+    sendCmd("OPEN", 0, 0);
+  else
+    sendCmd("CLOSE", 0, 0);
+  ROS_INFO_STREAM("Sent " << msg->data << " to gripper.");
+  gripper_state_ = msg->data;
+}
+//
+
+
 void ArduinoInterface::sendCmd(std::string cmd, int arg1, int arg2)
 {
   std::ostringstream s;

@@ -96,7 +96,7 @@ if __name__=="__main__":
             servo = Int32()
             servo.data = status            
             pub.publish(servo)
-            rospy.spin()
+            #rospy.spin()
 
             #print("servo pos: {0}".format(servo))
 
