@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   image_transport
   std_srvs
+  tf
 )
 
 ###################################
@@ -28,7 +29,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
    INCLUDE_DIRS include
 #  LIBRARIES vehicle_perception
-  CATKIN_DEPENDS cv_bridge geometry_msgs nav_msgs roscpp sensor_msgs image_transport std_srvs
+  CATKIN_DEPENDS cv_bridge geometry_msgs nav_msgs roscpp sensor_msgs image_transport std_srvs tf 
   DEPENDS OpenCV
 )
 
@@ -43,6 +44,8 @@ include_directories( include ${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp executable
 add_executable(surf_detection_example src/surf_detection_example.cpp src/surf_detector.cpp)
+add_executable(imu_to_tf src/imu_to_tf.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(surf_detection_example ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(imu_to_tf ${catkin_LIBRARIES})
