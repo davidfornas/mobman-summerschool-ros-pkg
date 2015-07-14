@@ -5,8 +5,12 @@
 
 void ArduinoInterface::wheelsCallback(const std_msgs::Int32MultiArray::ConstPtr& msg)
 {
-  sendCmd("WHEELS", msg->data[0] + lwheel_threshold_, msg->data[1] + rwheel_threshold_);
-  ROS_INFO_STREAM("Sent " << msg->data[0]+lwheel_threshold_ << ", " << msg->data[1]+rwheel_threshold_  << " to the wheels.");
+  moveWheels(msg->data[0], msg->data[1]);
+}
+
+void ArduinoInterface::moveWheels(int l_speed, int r_speed ){
+  sendCmd("WHEELS", l_speed + lwheel_threshold_, r_speed + rwheel_threshold_);
+  ROS_INFO_STREAM("Sent " << l_speed + lwheel_threshold_ << ", " << r_speed + rwheel_threshold_  << " to the wheels.");
 }
 
 void ArduinoInterface::sonarServoCallback(const std_msgs::Int32::ConstPtr& msg)

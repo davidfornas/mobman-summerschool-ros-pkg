@@ -95,6 +95,7 @@ public:
   sensor_msgs::LaserScan performSonarScan( float, float );
 
   void publishLaserScan(float, float);
+  void moveWheels(int, int);
 
 private:
 

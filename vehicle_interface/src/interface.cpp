@@ -15,6 +15,8 @@ int main(int argc, char *argv[])
   ros::Rate r(25);
   int count = 0;
 
+  interface.moveWheels(90, 90);
+
   while(ros::ok()){
     if(count % 100 == 0) interface.publishSonar();
     //interface.publishLaserScan(10,10);
