@@ -8,6 +8,15 @@ void ArduinoInterface::wheelsCallback(const std_msgs::Int32MultiArray::ConstPtr&
   moveWheels(msg->data[0], msg->data[1]);
 }
 
+void ArduinoInterface::gripperCallback(const std_msgs::Int32::ConstPtr& msg)
+{
+  if (msg->data == 1)
+    sendCmd("OPEN", 0, 0);
+  else
+    sendCmd("CLOSE", 0, 0);
+  ROS_INFO_STREAM("Sent " << msg->data << " to gripper.");
+}
+
 void ArduinoInterface::moveWheels(int l_speed, int r_speed ){
   sendCmd("WHEELS", l_speed + lwheel_threshold_, r_speed + rwheel_threshold_);
   ROS_INFO_STREAM("Sent " << l_speed + lwheel_threshold_ << ", " << r_speed + rwheel_threshold_  << " to the wheels.");
