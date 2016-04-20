@@ -4,28 +4,12 @@ Servo left_servo, right_servo;   // Servos for the wheels
 Servo sonar_servo;               // Servo for the sonar ranger
 Servo jaw_servo;
 
+int i=0;
+
 
 #define SENSOR 0     // A/D sonar port
 #define MEASURE 2   // Pin to enable sonar measuring
 
-//Make actions depending on the received command
-void issueCommand(String command, String param1, String param2){
-	if(command=="SERVO"){
-		moveSonar(param1);   
-	}else if(command=="WHEELS"){
-		moveWheels(param1, param2);
-	}else if(command=="SONAR"){
-		// WARNING! Choose 5V or 12V depending on the sonar model.
-		sense5v();
-		//sense12v();
-        /*}else if(command=="OPEN"){
-		openGripper();
-        }else if(command=="CLOSE"){
-		closeGripper();*/
-	}else{   
-		mySerial.println("Unrecognized Command");
-	}        
-} 
 
 //Move wheel servos
 void moveWheels(String lspd, String rspd){
@@ -53,7 +37,7 @@ void openGripper(){
 
 void closeGripper(){   
 	Serial.print("Closing gripper.");
-	jaw_servo.write(40);          
+	jaw_servo.write(20);          
 } 
 
 void setup()
@@ -67,7 +51,7 @@ void setup()
 	//  Init position
 	moveWheels("100", "90");
 	moveSonar("70"); 
-	///openGripper();     
+	closeGripper();     
 
 
 	// Open serial communications and wait for port to open:
@@ -78,10 +62,24 @@ void setup()
 
 void loop()
 {
-
+        if(i==50) {openGripper(); }
+        if(i==150) {closeGripper(); }
+        
+        if(i==100) {moveSonar("50");}
+        if(i==200) {moveSonar("90");}
   
-	moveWheels("100", "90");
+        if(i<=25) {moveWheels("70", "110");}
+        if(i>25 && i<=50) {moveWheels("90", "110");}
+        if(i>75 && i<=100) {moveWheels("110", "90");}
+        if(i>125 && i<=150) {moveWheels("70", "110");}
+        if(i>150 && i<=175) {moveWheels("120", "80");}
+        if(i>200 && i<=225) {moveWheels("70", "100");}
+        if(i>225 && i<=250) {moveWheels("90", "90");}
+        if(i>250 && i<=275) {moveWheels("70", "110");}
+        if(i>275 && i<=300) {moveWheels("90", "130");}
+        if(i==301) {i=0;}
   
+        i=i+1;
 	delay(20); 
 }
 
